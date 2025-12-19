@@ -1,0 +1,701 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>اختبار الوعي المائي</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --water-deep: #0a4d68;
+            --water-mid: #088395;
+            --water-light: #05bfdb;
+            --water-pale: #00FFCA;
+            --sand: #f5f0e8;
+            --white: #ffffff;
+            --success: #22c55e;
+            --warning: #eab308;
+            --danger: #ef4444;
+        }
+
+        body {
+            font-family: 'Tajawal', sans-serif;
+            background: linear-gradient(180deg, var(--water-deep) 0%, var(--water-mid) 50%, var(--water-light) 100%);
+            min-height: 100vh;
+            min-height: 100dvh;
+            color: var(--white);
+            overflow-x: hidden;
+        }
+
+        /* Water drops background animation */
+        .water-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            overflow: hidden;
+            z-index: 0;
+        }
+
+        .drop {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            animation: fall linear infinite;
+        }
+
+        @keyframes fall {
+            0% {
+                transform: translateY(-100px) scale(0);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(100vh) scale(1);
+                opacity: 0;
+            }
+        }
+
+        .container {
+            position: relative;
+            z-index: 1;
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 24px 20px;
+            min-height: 100vh;
+            min-height: 100dvh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Start Screen */
+        .screen {
+            display: none;
+            flex-direction: column;
+            flex: 1;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .screen.active {
+            display: flex;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .start-screen {
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            gap: 32px;
+        }
+
+        .logo-container {
+            width: 120px;
+            height: 120px;
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+                box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.4);
+            }
+            50% {
+                transform: scale(1.05);
+                box-shadow: 0 0 0 20px rgba(255, 255, 255, 0);
+            }
+        }
+
+        .logo-container svg {
+            width: 64px;
+            height: 64px;
+            fill: var(--white);
+        }
+
+        .start-title {
+            font-size: 28px;
+            font-weight: 800;
+            line-height: 1.4;
+        }
+
+        .start-subtitle {
+            font-size: 16px;
+            opacity: 0.9;
+            line-height: 1.6;
+        }
+
+        .event-badge {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            padding: 8px 20px;
+            border-radius: 50px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .btn {
+            background: var(--white);
+            color: var(--water-deep);
+            border: none;
+            padding: 16px 48px;
+            border-radius: 50px;
+            font-family: 'Tajawal', sans-serif;
+            font-size: 18px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn:active {
+            transform: scale(0.96);
+        }
+
+        /* Question Screen */
+        .question-screen {
+            padding-top: 20px;
+        }
+
+        .progress-container {
+            margin-bottom: 32px;
+        }
+
+        .progress-text {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .progress-bar {
+            height: 8px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--water-pale);
+            border-radius: 10px;
+            transition: width 0.4s ease;
+            box-shadow: 0 0 10px var(--water-pale);
+        }
+
+        .question-card {
+            background: rgba(255, 255, 255, 0.12);
+            backdrop-filter: blur(10px);
+            border-radius: 24px;
+            padding: 28px 24px;
+            margin-bottom: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .question-number {
+            font-size: 14px;
+            opacity: 0.8;
+            margin-bottom: 12px;
+        }
+
+        .question-text {
+            font-size: 20px;
+            font-weight: 700;
+            line-height: 1.6;
+        }
+
+        .answers-container {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            flex: 1;
+        }
+
+        .answer-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 16px;
+            padding: 18px 20px;
+            text-align: right;
+            font-family: 'Tajawal', sans-serif;
+            font-size: 16px;
+            font-weight: 500;
+            color: var(--white);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .answer-btn:active {
+            transform: scale(0.98);
+        }
+
+        .answer-btn.selected {
+            background: var(--white);
+            color: var(--water-deep);
+            border-color: var(--white);
+        }
+
+        .answer-icon {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            border: 2px solid currentColor;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            transition: all 0.3s ease;
+        }
+
+        .answer-btn.selected .answer-icon {
+            background: var(--water-deep);
+            border-color: var(--water-deep);
+        }
+
+        .answer-btn.selected .answer-icon::after {
+            content: '✓';
+            color: var(--white);
+            font-size: 14px;
+            font-weight: 700;
+        }
+
+        .answer-text {
+            flex: 1;
+        }
+
+        /* Result Screen */
+        .result-screen {
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            gap: 24px;
+            padding: 20px;
+        }
+
+        .result-icon {
+            width: 150px;
+            height: 150px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: bounceIn 0.6s ease;
+        }
+
+        .result-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        @keyframes bounceIn {
+            0% {
+                transform: scale(0);
+            }
+            50% {
+                transform: scale(1.2);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        .result-score {
+            font-size: 56px;
+            font-weight: 800;
+            line-height: 1;
+        }
+
+        .result-score span {
+            font-size: 24px;
+            opacity: 0.7;
+        }
+
+        .result-title {
+            font-size: 22px;
+            font-weight: 700;
+            line-height: 1.5;
+        }
+
+        .result-message {
+            font-size: 16px;
+            line-height: 1.8;
+            opacity: 0.95;
+            max-width: 340px;
+        }
+
+        .result-card {
+            background: rgba(255, 255, 255, 0.12);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            width: 100%;
+            max-width: 360px;
+        }
+
+        .restart-btn {
+            background: transparent;
+            border: 2px solid var(--white);
+            color: var(--white);
+            margin-top: 12px;
+        }
+
+        .restart-btn:active {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        /* Waves decoration */
+        .waves {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 100px;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .wave {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 200%;
+            height: 100px;
+            background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 120' preserveAspectRatio='none'%3E%3Cpath d='M0,60 C300,120 600,0 900,60 C1200,120 1200,60 1200,60 L1200,120 L0,120 Z' fill='rgba(255,255,255,0.1)'/%3E%3C/svg%3E") repeat-x;
+            background-size: 600px 100px;
+            animation: wave 8s linear infinite;
+        }
+
+        .wave:nth-child(2) {
+            bottom: 10px;
+            opacity: 0.5;
+            animation-duration: 12s;
+            animation-direction: reverse;
+        }
+
+        @keyframes wave {
+            0% {
+                transform: translateX(0);
+            }
+            100% {
+                transform: translateX(-600px);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Water drops background -->
+    <div class="water-bg" id="waterBg"></div>
+    
+    <!-- Waves -->
+    <div class="waves">
+        <div class="wave"></div>
+        <div class="wave"></div>
+    </div>
+
+    <div class="container">
+        <!-- Start Screen -->
+        <div class="screen start-screen active" id="startScreen">
+            <div class="event-badge">اليوم العالمي للتطوع</div>
+            <div class="logo-container">
+                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 2c-5.33 4.55-8 8.48-8 11.8 0 4.98 3.8 8.2 8 8.2s8-3.22 8-8.2c0-3.32-2.67-7.25-8-11.8zm0 18c-3.35 0-6-2.57-6-6.2 0-2.34 1.95-5.44 6-9.14 4.05 3.7 6 6.79 6 9.14 0 3.63-2.65 6.2-6 6.2z"/>
+                    <path d="M12 5.1C8.28 8.4 7 11.01 7 13.8c0 2.92 2.24 5.2 5 5.2s5-2.28 5-5.2c0-2.79-1.28-5.4-5-8.7z" opacity="0.3"/>
+                </svg>
+            </div>
+            <h1 class="start-title">اختبار الوعي المائي</h1>
+            <p class="start-subtitle">اكتشف مدى وعيك بأهمية ترشيد استهلاك المياه من خلال 9 أسئلة بسيطة</p>
+            <button class="btn" onclick="startQuiz()">ابدأ الاختبار</button>
+        </div>
+
+        <!-- Question Screen -->
+        <div class="screen question-screen" id="questionScreen">
+            <div class="progress-container">
+                <div class="progress-text">
+                    <span id="progressText">السؤال 1 من 9</span>
+                    <span id="progressPercent">0%</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+                </div>
+            </div>
+            
+            <div class="question-card">
+                <div class="question-number" id="questionNumber">السؤال 1</div>
+                <div class="question-text" id="questionText"></div>
+            </div>
+
+            <div class="answers-container" id="answersContainer"></div>
+        </div>
+
+        <!-- Result Screen -->
+        <div class="screen result-screen" id="resultScreen">
+            <div class="result-icon" id="resultIcon">🌊</div>
+            <div class="result-score">
+                <span id="scoreValue">0</span>
+                <span>/ 9</span>
+            </div>
+            <div class="result-card">
+                <h2 class="result-title" id="resultTitle"></h2>
+                <p class="result-message" id="resultMessage"></p>
+            </div>
+            <button class="btn" onclick="restartQuiz()">أعد الاختبار</button>
+        </div>
+    </div>
+
+    <script>
+        // Questions data
+        const questions = [
+            {
+                text: "كم من الوقت بتستغرق عادةً أثناء الاستحمام؟",
+                answers: [
+                    { text: "أقل من 5 دقائق", points: 1 },
+                    { text: "5-10 دقائق", points: 0.5 },
+                    { text: "أكثر من 10 دقائق", points: 0 }
+                ]
+            },
+            {
+                text: "هل بتترك الصنبور شغال أثناء تنظيف أسنانك؟",
+                answers: [
+                    { text: "لا", points: 1 },
+                    { text: "أحيانًا", points: 0.5 },
+                    { text: "دائمًا", points: 0 }
+                ]
+            },
+            {
+                text: "كم مرة بتشغّل الغسالة بالأسبوع؟",
+                answers: [
+                    { text: "1-2 مرة", points: 1 },
+                    { text: "3-4 مرات", points: 0.5 },
+                    { text: "أكثر من 5 مرات", points: 0 }
+                ]
+            },
+            {
+                text: "كيف بتغسل سيارتك؟",
+                answers: [
+                    { text: "باستخدام السطل والاسفنجة", points: 1 },
+                    { text: "في محطة الغسيل", points: 0.5 },
+                    { text: "باستخدام الخرطوم", points: 0 }
+                ]
+            },
+            {
+                text: "كيف بتسقي النباتات في البيت؟",
+                answers: [
+                    { text: "بستخدم مياه رمادية (مياه مُعاد استخدامها)", points: 1 },
+                    { text: "بستخدم مياه الصنبور بكميات معقولة", points: 0.5 },
+                    { text: "بستخدم مياه الشرب المعبّأة", points: 0 }
+                ]
+            },
+            {
+                text: "هل بتستخدم أدوات ترشيد المياه في البيت؟",
+                answers: [
+                    { text: "نعم", points: 1 },
+                    { text: "جزئيًا", points: 0.5 },
+                    { text: "لا", points: 0 }
+                ]
+            },
+            {
+                text: "كيف بتغسل الأطباق عادة؟",
+                answers: [
+                    { text: "بجلاية ممتلئة", points: 1 },
+                    { text: "يدويًا باستخدام الحوض", points: 0.5 },
+                    { text: "يدويًا والحنفية مفتوحة", points: 0 }
+                ]
+            },
+            {
+                text: "هل بتغلق الصنبور أثناء غسل الوجه؟",
+                answers: [
+                    { text: "نعم", points: 1 },
+                    { text: "أحيانًا", points: 0.5 },
+                    { text: "لا", points: 0 }
+                ]
+            },
+            {
+                text: "هل بتفحص تسريبات المياه بشكل دوري؟",
+                answers: [
+                    { text: "نعم", points: 1 },
+                    { text: "أحيانًا", points: 0.5 },
+                    { text: "لا", points: 0 }
+                ]
+            }
+        ];
+
+        // Results based on score
+        const results = {
+            green: {
+                minScore: 7,
+                icon: "./assets/green.svg",
+                title: "ممتاز!",
+                message: "عاداتك اليومية ممتازة وتساهم في الحفاظ على المياه. استمر، فأنت تساهم في الحل."
+            },
+            yellow: {
+                minScore: 4,
+                icon: "./assets/yellow.svg",
+                title: "على الطريق الصحيح",
+                message: "أنت على الطريق الصحيح، ندعوك لزيارة جناح ترشيد استهلاك المياه للتعرّف على حلول عملية تساعدك على ترشيد الاستهلاك بشكل فعّال."
+            },
+            red: {
+                minScore: 0,
+                icon: "./assets/red.svg",
+                title: "شكرًا على صراحتك",
+                message: "الأردن يُعد ثاني أفقر دولة مائيًا في العالم، وكل خطوة صغيرة تُحدث فرقًا. ندعوك لزيارة جناح ترشيد استهلاك المياه للتعرف معاً على كيفية المساهمة في حماية أمننا المائي."
+            }
+        };
+
+        let currentQuestion = 0;
+        let score = 0;
+        let selectedAnswer = null;
+
+        // Create water drops
+        function createWaterDrops() {
+            const waterBg = document.getElementById('waterBg');
+            for (let i = 0; i < 20; i++) {
+                const drop = document.createElement('div');
+                drop.className = 'drop';
+                drop.style.left = Math.random() * 100 + '%';
+                drop.style.animationDuration = (Math.random() * 3 + 2) + 's';
+                drop.style.animationDelay = Math.random() * 5 + 's';
+                drop.style.width = (Math.random() * 8 + 4) + 'px';
+                drop.style.height = drop.style.width;
+                waterBg.appendChild(drop);
+            }
+        }
+
+        function showScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(screenId).classList.add('active');
+        }
+
+        function startQuiz() {
+            currentQuestion = 0;
+            score = 0;
+            showScreen('questionScreen');
+            showQuestion();
+        }
+
+        function showQuestion() {
+            const question = questions[currentQuestion];
+            
+            // Update progress
+            const progress = ((currentQuestion) / questions.length) * 100;
+            document.getElementById('progressFill').style.width = progress + '%';
+            document.getElementById('progressText').textContent = `السؤال ${currentQuestion + 1} من ${questions.length}`;
+            document.getElementById('progressPercent').textContent = Math.round(progress) + '%';
+            
+            // Update question
+            document.getElementById('questionNumber').textContent = `السؤال ${currentQuestion + 1}`;
+            document.getElementById('questionText').textContent = question.text;
+            
+            // Create answer buttons
+            const container = document.getElementById('answersContainer');
+            container.innerHTML = '';
+            
+            question.answers.forEach((answer, index) => {
+                const btn = document.createElement('button');
+                btn.className = 'answer-btn';
+                btn.innerHTML = `
+                    <span class="answer-icon"></span>
+                    <span class="answer-text">${answer.text}</span>
+                `;
+                btn.onclick = () => selectAnswer(index, answer.points);
+                container.appendChild(btn);
+            });
+
+            // Animate in
+            container.style.animation = 'none';
+            container.offsetHeight;
+            container.style.animation = 'fadeIn 0.4s ease';
+        }
+
+        function selectAnswer(index, points) {
+            // Visual feedback
+            document.querySelectorAll('.answer-btn').forEach((btn, i) => {
+                btn.classList.toggle('selected', i === index);
+            });
+
+            // Add points and move to next
+            score += points;
+            
+            setTimeout(() => {
+                currentQuestion++;
+                if (currentQuestion < questions.length) {
+                    showQuestion();
+                } else {
+                    showResult();
+                }
+            }, 400);
+        }
+
+        function showResult() {
+            showScreen('resultScreen');
+            
+            const finalScore = Math.round(score);
+            document.getElementById('scoreValue').textContent = finalScore;
+            
+            let result;
+            let colorClass;
+            
+            if (score >= results.green.minScore) {
+                result = results.green;
+                colorClass = 'green';
+            } else if (score >= results.yellow.minScore) {
+                result = results.yellow;
+                colorClass = 'yellow';
+            } else {
+                result = results.red;
+                colorClass = 'red';
+            }
+            
+            const iconEl = document.getElementById('resultIcon');
+            iconEl.innerHTML = `<img src="${result.icon}" alt="result icon">`;
+            iconEl.className = 'result-icon';
+            
+            document.getElementById('resultTitle').textContent = result.title;
+            document.getElementById('resultMessage').textContent = result.message;
+        }
+
+        function restartQuiz() {
+            showScreen('startScreen');
+        }
+
+        // Initialize
+        createWaterDrops();
+    </script>
+</body>
+</html>
