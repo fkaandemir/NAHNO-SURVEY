@@ -561,15 +561,12 @@
     </div>
 
     <script>
-        // Supabase Configuration - REPLACE WITH YOUR VALUES
-        const SUPABASE_URL = 'YOUR_SUPABASE_URL';
-        const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY';
+        // Supabase Configuration
+        const SUPABASE_URL = 'https://vgkflhptajgoxsklgenz.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZna2ZsaHB0YWpnb3hza2xnZW56Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjYxNjkyOTYsImV4cCI6MjA4MTc0NTI5Nn0.mLJ1wnOpNsxyi66HX_vVbQVEyqe1D7htfHcbYOFb_KM';
         
-        // Initialize Supabase (only if configured)
-        let supabaseClient = null;
-        if (SUPABASE_URL !== 'https://vgkflhptajgoxsklgenz.supabase.co' && SUPABASE_ANON_KEY !== 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZna2ZsaHB0YWpnb3hza2xnZW56Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjYxNjkyOTYsImV4cCI6MjA4MTc0NTI5Nn0.mLJ1wnOpNsxyi66HX_vVbQVEyqe1D7htfHcbYOFb_KM') {
-            supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-        }
+        // Initialize Supabase
+        const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
         // User data
         let userData = {
@@ -838,17 +835,6 @@
         }
 
         async function saveToSupabase(finalScore, resultType) {
-            if (!supabaseClient) {
-                console.log('Supabase not configured. Data would be saved:', {
-                    name: userData.name,
-                    surname: userData.surname,
-                    phone: userData.phone,
-                    score: finalScore,
-                    result: resultType
-                });
-                return;
-            }
-            
             try {
                 const { data, error } = await supabaseClient
                     .from('survey_responses')
